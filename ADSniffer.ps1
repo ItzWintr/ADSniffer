@@ -47,7 +47,7 @@ function Get-ADS {
                Where-Object { $_.Stream -ne "::$DATA" }
 
     if ($streams.Count -gt 0) {
-        Log "`nFile: $FilePath" "Blue"
+        Log "`nFile: $FilePath" "White"
         foreach ($stream in $streams) {
             $streamName = $stream.Stream
             $sizeKB = [math]::Round($stream.Length / 1KB, 2)
