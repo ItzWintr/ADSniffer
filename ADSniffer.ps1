@@ -75,3 +75,4 @@ foreach ($file in $files) {
 Log "`n--- SCAN COMPLETE ---" "White"
 Log "Analyzed files: $fileCount" "White"
 Log "Detected streams:  $streamCount" "White"
+Log ""
