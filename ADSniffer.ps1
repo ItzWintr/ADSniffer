@@ -8,18 +8,16 @@ param (
     [switch]$Recursive
 )
 
-# Check if it's a valid path <3
 if (-Not (Test-Path $Path)) {
-    Write-Error "Invalid path: $Path"
+    Write-Error "Ruta no válida: $Path"
     exit
 }
 
-# If an output file is specified, create ir and write to it, i mean, pretty obvious.
 if ($Output) {
     try {
         Clear-Content -Path $Output -ErrorAction SilentlyContinue
     } catch {
-        Write-Error "Cannot write to output file: $Output"
+        Write-Error "No se puede escribir en el archivo de salida: $Output"
         exit
     }
 }
@@ -44,12 +42,12 @@ function Get-ADS {
                Where-Object { $_.Stream -ne "::$DATA" }
 
     if ($streams.Count -gt 0) {
-        Log "`nFile: $FilePath"
+        Log "`nArchivo: $FilePath"
         foreach ($stream in $streams) {
             $streamName = $stream.Stream
             $sizeKB = [math]::Round($stream.Length / 1KB, 2)
-            $tag = if ($streamName -match "\.(exe|ps1|bat|dll|vbs)$") { "[CAREFUL!]" } else { "[STREAM]" }
-            Log "  └─ $tag $streamName ($sizeKB KB)"
+            $tag = if ($streamName -match "\.(exe|ps1|bat|dll|vbs)$") { "[PELIGRO]" } else { "[STREAM]" }
+        Log "    - $tag $streamName ($sizeKB KB)"
             $streamCount++
         }
     }
@@ -57,9 +55,6 @@ function Get-ADS {
     $fileCount++
 }
 
-# Time to get the files!
-Log "--- STARTING ADS SCAN ---"
-Log "Scanning on path: $Path"
 $files = if ($Recursive) {
     Get-ChildItem -Path $Path -Recurse -File -ErrorAction SilentlyContinue
 } else {
@@ -70,7 +65,6 @@ foreach ($file in $files) {
     Get-ADS -FilePath $file.FullName
 }
 
-# Resumen
-Log "`--- SCAN COMPLETE :D ---"
-Log "Analyzed Files: $fileCount"
-Log "Detected Streams:  $streamCount"
+Log "`n--- ESCANEO COMPLETADO ---"
+Log "Archivos analizados: $fileCount"
+Log "Streams detectados:  $streamCount"
