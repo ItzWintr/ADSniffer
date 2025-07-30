@@ -50,7 +50,8 @@ function Get-ADS {
         $streams = Get-Item -Path "$FilePath" -Stream * -ErrorAction Stop |
                    Where-Object { $_.Stream -ne "::$DATA" }
     } catch {
-        # Si -Stream no es soportado, no hacer nada
+        # If the file does not have any ADS or cannot be accessed, we skip it.
+        Log "Error accessing file: $FilePath" "Red"
         return
     }
 
@@ -69,7 +70,12 @@ function Get-ADS {
         }
     }
 }
-
+# Additional arguments and options for the script
+if ($Output) {  
+    Log "Output will be saved to: $Output" "White"
+} else {
+    Log "No output file specified. Results will be displayed in the console." "White"
+}
 $files = if ($Recursive) {
     Get-ChildItem -Path $Path -Recurse -File -ErrorAction SilentlyContinue
 } else {
@@ -79,7 +85,7 @@ $files = if ($Recursive) {
 foreach ($file in $files) {
     Get-ADS -FilePath $file.FullName
 }
-
+# Final output summary, not much to say here
 Log "`n--- SCAN COMPLETE ---" "White"
 Log "Analyzed files: $fileCount" "White"
 Log "Detected streams:  $streamCount" "White"
