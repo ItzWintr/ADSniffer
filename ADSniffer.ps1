@@ -1,3 +1,4 @@
+## ADSniffer.ps1 startup
 param (
     [Alias("p")]
     [string]$Path = ".",
@@ -7,7 +8,7 @@ param (
 
     [switch]$Recursive
 )
-
+## Here we check if the path is valid and if the output file can be written to.
 if (-Not (Test-Path $Path)) {
     Write-Error "Invalid Path: $Path"
     exit
@@ -24,7 +25,8 @@ if ($Output) {
 
 $streamCount = 0
 $fileCount = 0
-
+## Some decorations for the output
+Write-Host "ADSniffer - Alternate Data Stream Scanner" -ForegroundColor Cyan
 function Log {
     param(
         [string]$Text,
@@ -35,16 +37,22 @@ function Log {
         Add-Content -Path $Output -Value $Text
     }
 }
-
+# This function retrieves and logs alternate data streams (ADS) for a given file.
+# It counts the number of files and streams processed, and logs them in a structured format.
 function Get-ADS {
     param (
         [string]$FilePath
     )
 
-    $script:fileCount++ 
+    $script:fileCount++
 
-    $streams = Get-Item -Path "$FilePath" -Stream * -ErrorAction SilentlyContinue |
-               Where-Object { $_.Stream -ne "::$DATA" }
+    try {
+        $streams = Get-Item -Path "$FilePath" -Stream * -ErrorAction Stop |
+                   Where-Object { $_.Stream -ne "::$DATA" }
+    } catch {
+        # Si -Stream no es soportado, no hacer nada
+        return
+    }
 
     if ($streams.Count -gt 0) {
         Log "`nFile: $FilePath" "White"
@@ -57,7 +65,7 @@ function Get-ADS {
             } else {
                 Log "    - $tag $streamName ($sizeKB KB)" "Green"
             }
-            $script:streamCount++ 
+            $script:streamCount++
         }
     }
 }
