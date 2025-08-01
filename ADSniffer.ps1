@@ -1,4 +1,6 @@
-## ADSniffer.ps1 startup
+# ADSniffer.ps1 startup script
+# This script scans for Alternate Data Streams (ADS) in files within a specified directory.
+# It can operate recursively and log results to a specified output file or the console.
 param (
     [Alias("p")]
     [string]$Path = ".",
@@ -8,7 +10,7 @@ param (
 
     [switch]$Recursive
 )
-## Here we check if the path is valid and if the output file can be written to.
+# Here we check if the path is valid and if the output file can be written to.
 if (-Not (Test-Path $Path)) {
     Write-Error "Invalid Path: $Path"
     exit
@@ -25,7 +27,7 @@ if ($Output) {
 
 $streamCount = 0
 $fileCount = 0
-## Some decorations for the output
+# Some decorations for the output
 Write-Host "ADSniffer - Alternate Data Stream Scanner" -ForegroundColor Cyan
 function Log {
     param(
